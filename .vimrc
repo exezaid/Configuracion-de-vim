@@ -178,7 +178,7 @@ autocmd FileType css set omnifunc=csscomplete#CompleteCSS
 "let OmniCpp_MayCompleteDot = 0
 "let OmniCpp_MayCompleteArrow = 0
 "let OmniCpp_MayCompleteScope = 0
-" When 'completeopt' does not contain "longest", Vim automatically select the first entry of the popup menu. You can
+" When 'completeopt' does not contain 'longest', Vim automatically select the first entry of the popup menu. You can
 "change this behaviour with the OmniCpp_SelectFirstItem option.
 "let OmniCpp_SelectFirstItem = 0
 
@@ -258,4 +258,8 @@ nmap <D-[> <<
 nmap <D-]> >>
 vmap <D-[> <gv
 vmap <D-]> >gv
-
+""""""""""""""""""""""""""""""""""""""""""""""""""
+" Snipmate with AutoComplPop(acp)                "
+"""""""""""""""""""""""""""""""""""""""""""""""""
+let g:acp_behaviorSnipmateLength = 1
+let g:acp_ignorecaseOption = 0
