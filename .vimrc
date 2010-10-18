@@ -143,6 +143,16 @@ autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
 autocmd FileType css set omnifunc=csscomplete#CompleteCSS
 
+
+" Ruby goodies
+autocmd FileType ruby,eruby set omnifunc=rubycomplete#Complete
+
+autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
+
+autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
+
+map <leader>mr <ESC>:rubyf %<CR>
+
 "let g:pydiction_location = '/home/ezequiel/.vim/after/ftplugin/pydiction/complete-dict'
 
 
@@ -263,3 +273,4 @@ vmap <D-]> >gv
 """""""""""""""""""""""""""""""""""""""""""""""""
 let g:acp_behaviorSnipmateLength = 1
 let g:acp_ignorecaseOption = 0
+
