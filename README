@@ -3,4 +3,4 @@ sudo apt-get install ctags
 sudo pip install dbgp
 sudo pip install vim-debug
 install-vim-debug.py
-gem install vim-ruby
+sudo gem install vim-ruby
