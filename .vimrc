@@ -71,8 +71,8 @@ set mouse=a  " Mouse in all modes
 
 " Backups & Files
 "set backup                     " Enable creation of backup file.
-"set backupdir=~/.vim/backups " Where backups will go.
-"set directory=~/.vim/tmp     " Where temporary files will go.
+set backupdir=~/.vim/backups " Where backups will go.
+set directory=~/.vim/tmp     " Where temporary files will go.
 
 " F10 activa modo pegar (no autoindenta, no descoloca lo que pegamos), F11
 " lo desactiva
