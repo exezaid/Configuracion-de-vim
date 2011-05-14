@@ -268,6 +268,9 @@ nmap <leader>al :left<CR>
 nmap <leader>ar :right<CR>
 nmap <leader>ac :center<CR>
 
+" Dpaste
+map <leader>p :Dpaste<CR>
+
 " Folding
 nnoremap <Space> za
 vnoremap <Space> za
