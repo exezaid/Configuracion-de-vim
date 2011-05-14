@@ -248,10 +248,6 @@ map <f11> :set nopaste<cr>
 " Nuestros valores por defecto para el plugin Project
 :let g:proj_flags="imstvcg"
 
-" Que no haga la ventana de gvim demasiado pequeña
-au GUIEnter * set lines=40 columns=100
-
-
 " Pep 8 validator
 noremap  <F6>  :call Pep8()<CR>
 
