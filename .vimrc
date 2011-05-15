@@ -342,6 +342,9 @@ nmap <leader>ac :center<CR>
 " Dpaste
 map <leader>p :Dpaste<CR>
 
+"Paste ,v
+nnoremap <leader>v "+gP
+
 " Folding
 nnoremap <Space> za
 vnoremap <Space> za
