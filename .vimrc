@@ -20,7 +20,7 @@ set lazyredraw                  " don't update the display while executing macro
 set laststatus=2                " tell VIM to always put a status line in, even
                                 "    if there is only one window
 set cmdheight=2                 " use a status bar that is 2 rows high
-
+set scrolloff=4                 " keep 4 lines off the edges of the screen when scrolling
 let mapleader=","
 set fileformats="unix,dos,mac"
 set formatoptions+=1            " When wrapping paragraphs, don't end lines
@@ -47,8 +47,6 @@ function! MyFoldText()
     return line . ' …' . repeat(" ",fillcharcount) . foldedlinecount . ' '
 endfunction
 set foldtext=MyFoldText()
-
-
 
 if has("autocmd")
     augroup invisible_chars "{{{
@@ -94,6 +92,7 @@ if has("autocmd")
         autocmd filetype html,htmldjango let b:closetag_html_style=1
         autocmd filetype html,xhtml,xml source ~/.vim/scripts/closetag.vim
     augroup end " }}}
+
     augroup python_files "{{{
         au!
 
@@ -173,6 +172,61 @@ if has("autocmd")
 endif
 " }}}
 
+" Skeleton processing {{{
+
+if has("autocmd")
+
+    "if !exists('*LoadTemplate')
+    "function LoadTemplate(file)
+        "" Add skeleton fillings for Python (normal and unittest) files
+        "if a:file =~ 'test_.*\.py$'
+            "execute "0r ~/.vim/skeleton/test_template.py"
+        "elseif a:file =~ '.*\.py$'
+            "execute "0r ~/.vim/skeleton/template.py"
+        "endif
+    "endfunction
+    "endif
+
+    "autocmd BufNewFile * call LoadTemplate(@%)
+
+endif " has("autocmd")
+
+" }}}
+
+" Gundo.vim
+if v:version >= 730
+    nnoremap <F7> :GundoToggle<CR>
+endif
+" }}}
+
+" NERDTree settings {{{
+" Put focus to the NERD Tree with F3 (tricked by quickly closing it and
+" immediately showing it again, since there is no :NERDTreeFocus command)
+" Activar navegador de archivos
+nmap <F3> :NERDTreeToggle<CR>
+nmap <leader>m :NERDTreeClose<CR>:NERDTreeFind<CR>
+nmap <leader>N :NERDTreeClose<CR>
+
+" Store the bookmarks file
+let NERDTreeBookmarksFile=expand("$HOME/.vim/NERDTreeBookmarks")
+
+" Show the bookmarks table on startup
+let NERDTreeShowBookmarks=1
+
+" Show hidden files, too
+let NERDTreeShowFiles=1
+let NERDTreeShowHidden=1
+
+" Quit on opening files from the tree
+let NERDTreeQuitOnOpen=1
+
+" Highlight the selected entry in the tree
+let NERDTreeHighlightCursorline=1
+
+" Use a single click to fold/unfold directories and a double click to open
+" files
+let NERDTreeMouseMode=2
+
 " Don't display these kinds of files
 let NERDTreeIgnore=[ '\.pyc$', '\.pyo$', '\.py\$class$', '\.obj$',
             \ '\.o$', '\.so$', '\.egg$', '^\.git$' ]
@@ -200,7 +254,8 @@ set timeoutlen=250  " Time to wait after ESC (default causes an annoying delay)
 set incsearch "busqueda incremental (a medida que se escribe)
 set hlsearch "resulados de busqudas resaltados
 colorscheme delek  " Uncomment this to set a default theme
-
+set showcmd                     " show (partial) command in the last line of the screen
+                                "    this also shows visual selection info
 " Formatting (some of these are for coding in C and C++)
 set ts=4  " Tabs are 2 spaces
 set bs=2  " Backspace over everything in insert mode
@@ -222,6 +277,7 @@ set mat=5  " Bracket blinking.
 "set list
 "set lcs=tab:\ \ ,eol:$,trail:~,extends:>,precedes:<
 set list listchars=tab:»»,trail:·
+"set listchars=tab:▸\ ,trail:·,extends:#,nbsp:·
 "set list lcs=tab:·⁖,trail:¶
 " Quitar espacios al final de la linea
 "autocmd BufWritePre * :%s/\s\+$//e
@@ -238,7 +294,10 @@ set mouse=a  " Mouse in all modes
 " Backups & Files
 "set backup                     " Enable creation of backup file.
 "set backupdir=~/.vim/backups " Where backups will go.
-"set directory=~/.vim/tmp     " Where temporary files will go.
+set nobackup                    " do not keep backup files, it's 70's style cluttering
+set noswapfile                  " do not write annoying intermediate swap files,
+                                "    who did ever restore from swap files anyway?
+set directory=~/.vim/.tmp,~/tmp,/tmp
 
 " F10 activa modo pegar (no autoindenta, no descoloca lo que pegamos), F11
 " lo desactiva
@@ -249,7 +308,8 @@ map <f11> :set nopaste<cr>
 :let g:proj_flags="imstvcg"
 
 " Pep 8 validator
-noremap  <F6>  :call Pep8()<CR>
+"noremap  <F6>  :call Pep8()<CR>
+autocmd FileType python map <buffer> <F6> :call Pep8()<CR>
 
 "tagbsearch  use binary searching in tags files
 "set tbs
@@ -279,12 +339,15 @@ nmap <leader>al :left<CR>
 nmap <leader>ar :right<CR>
 nmap <leader>ac :center<CR>
 
-" Dpaste 
+" Dpaste
 map <leader>p :Dpaste<CR>
 
 " Folding
 nnoremap <Space> za
 vnoremap <Space> za
+
+" Creating folds for tags in HTML
+nnoremap <leader>ft Vatzf
 
 " Jump to matching pairs easily, with Tab
 nnoremap <Tab> %
@@ -311,15 +374,20 @@ nnoremap TT :TlistToggle<CR>
 map <F4> :TlistToggle<CR>
 " Various Taglist diplay config:
 " Poner el frame en la derecha que el Project ya lo pone a la izquierda
-let Tlist_Use_Right_Window = 1
+let Tlist_Use_Right_Window=1
 let Tlist_Compact_Format = 1
+" don't show scope info
+let Tlist_Display_Tag_Scope=1
 let Tlist_Exit_OnlyWindow = 1
-let Tlist_GainFocus_On_ToggleOpen = 1
+" show function/method prototypes in the list
+let Tlist_Display_Prototype=1
+let Tlist_GainFocus_On_ToggleOpen=1
 let Tlist_File_Fold_Auto_Close = 1
+" the default ctags in /usr/bin on the Mac is GNU ctags, so change it to the
+" exuberant ctags version in /usr/local/bin
+"let Tlist_Ctags_Cmd = '/usr/local/bin/ctags'
 " Tamaño mínimo de frame de tags
 let Tlist_WinWidth = 40
-" Activar navegador de archivos
-map <F3> :NERDTreeToggle<CR>
 " Cerrar sola ventana de ayuda de completado
 autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
 autocmd InsertLeave * if pumvisible() == 0|pclose|endif
@@ -478,3 +546,15 @@ let g:use_zen_complete_tag = 1
 "    'user_zen_anchorizesummary_key'
 
 let g:user_zen_expandabbr_key = '<c-e>'
+
+
+
+" Creating underline/overline headings for markup languages
+" Inspired by http://sphinx.pocoo.org/rest.html#sections
+nnoremap <leader>1 yyPVr=jyypVr=
+nnoremap <leader>2 yyPVr*jyypVr*
+nnoremap <leader>3 yypVr=
+nnoremap <leader>4 yypVr-
+nnoremap <leader>5 yypVr^
+nnoremap <leader>6 yypVr"
+
