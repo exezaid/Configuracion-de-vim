@@ -3,9 +3,9 @@
 
 " Use pathogen to easily modify the runtime path to include all plugins under
 " the ~/.vim/bundle directory
-filetype off                    " force reloading *after* pathogen loaded
-call pathogen#helptags()
-call pathogen#runtime_append_all_bundles()
+"filetype off                    " force reloading *after* pathogen loaded
+"call pathogen#helptags()
+"call pathogen#runtime_append_all_bundles()
 
 set wildmenu                    " make tab completion for files/buffers act like bash
 set wildmode=list:full          " show a list when pressing tab and complete
@@ -251,6 +251,17 @@ map <f11> :set nopaste<cr>
 " Pep 8 validator
 noremap  <F6>  :call Pep8()<CR>
 
+"tagbsearch  use binary searching in tags files
+"set tbs
+"set notbs
+
+"tags list of file names to search for tags
+"(global or local to buffer)
+"set tag=./tags,./TAGS,tags,TAGS
+
+" Clears the search register
+nmap <silent> <leader>/ :nohlsearch<CR>
+
 " Common abbreviations / misspellings {{{
 source ~/.vim/autocorrect.vim
 " }}}
@@ -268,7 +279,7 @@ nmap <leader>al :left<CR>
 nmap <leader>ar :right<CR>
 nmap <leader>ac :center<CR>
 
-" Dpaste
+" Dpaste 
 map <leader>p :Dpaste<CR>
 
 " Folding
@@ -320,8 +331,8 @@ map <F2> :TaskList<CR>
 " Control T nueva pestaña (la cerramos con :q)
 map <c-t> <esc>:tabnew<cr>
 " Control PageUp/PageDown cambiar de pestaña
-map <c-pageup> :tabp</c-pageup></cr><cr>
-map <c-pagedown> :tabn</c-pagedown></cr><cr>
+map <c-pageup> :tabp<cr>
+map <c-pagedown> :tabn<cr>
 
 " Configuración del autocompletado inteligente (el de Python necesita un Vim
 " compilado contra las librerías de Python para funcionar)
@@ -346,6 +357,12 @@ au BufRead *.js set ts=4 sw=4 sts=4
 
 " Let fugitive.vim show me git status
 set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
+
+
+
+"taglist
+"set statusline=%<%f%=%([%{Tlist_Get_Tagname_By_Line()}]%)
+"set title titlestring=%<%f\ %([%{Tlist_Get_Tagname_By_Line()}]%)
 
 " Set font
 set guifont=Bitstream_Vera_Sans_Mono:h12
@@ -383,7 +400,7 @@ let g:acp_ignorecaseOption = 0
 "map <F5> :Dbg over<CR>
 "map <F6> :Dbg into<CR>
 "map <F7> :Dbg out<CR>
-map <F8> :Dbg here<CR>
+"map <F8> :Dbg here<CR>
 "map <F9> :Dbg break<CR>
 "map <F10> :Dbg watch<CR>
 "map <F11> :Dbg down<CR>
@@ -427,3 +444,37 @@ let OmniCpp_MayCompleteScope = 0
 "change this behaviour with the OmniCpp_SelectFirstItem option.
 let OmniCpp_SelectFirstItem = 0
 
+
+"zencoding django-template
+let g:user_zen_settings = {
+\    'html' : {
+\        'extends' : 'html',
+\        'filters' : 'html',
+\        'indentation' : '  '
+\    },
+\    'xml' : {
+\        'extends' : 'html',
+\    },
+\    'haml' : {
+\        'extends' : 'html',
+\   },
+\}
+
+"If you want to complete tags using |ominifunc| then add this.
+let g:use_zen_complete_tag = 1
+"let g:user_zen_leader_key = '<c-e>'
+"Or if you prefer to map for each actions, then you set each variables.
+"    'user_zen_expandabbr_key'
+"    'user_zen_expandword_key'
+"    'user_zen_balancetaginward_key'
+"    'user_zen_balancetagoutward_key'
+"    'user_zen_next_key'
+"    'user_zen_prev_key'
+"    'user_zen_imagesize_key'
+"    'user_zen_togglecomment_key'
+"    'user_zen_splitjointag_key'
+"    'user_zen_removetag_key'
+"    'user_zen_anchorizeurl_key'
+"    'user_zen_anchorizesummary_key'
+
+let g:user_zen_expandabbr_key = '<c-e>'
