@@ -5,14 +5,14 @@ colorscheme inkpot
 set gfn=Monaco\ 11
 au GUIEnter * set lines=35 columns=120
 "toolbar "icons", "text" and/or "tooltips"; how to show the toolbar
-set tb=icons,tooltips
+"set tb=icons,tooltips
 "toolbariconsize Size of toolbar icons
-set tbis=small
+"set tbis=small
 "guipty use a pseudo-tty for I/O to external commands
 "set guipty 
 "set noguipty
 "browsedir      "last", "buffer" or "current": which directory used for the file browser
-set bsdir=last
+"set bsdir=last
 "tagrelative    file names in a tags file are relative to the tags file
 "set tr
 "set notr
