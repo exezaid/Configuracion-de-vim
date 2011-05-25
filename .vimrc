@@ -3,9 +3,9 @@
 
 " Use pathogen to easily modify the runtime path to include all plugins under
 " the ~/.vim/bundle directory
-"filetype off                    " force reloading *after* pathogen loaded
-"call pathogen#helptags()
-"call pathogen#runtime_append_all_bundles()
+filetype off                    " force reloading *after* pathogen loaded
+call pathogen#helptags()
+call pathogen#runtime_append_all_bundles()
 
 set wildmenu                    " make tab completion for files/buffers act like bash
 set wildmode=list:full          " show a list when pressing tab and complete
@@ -23,8 +23,9 @@ set cmdheight=2                 " use a status bar that is 2 rows high
 set scrolloff=4                 " keep 4 lines off the edges of the screen when scrolling
 let mapleader=","
 set fileformats="unix,dos,mac"
-set formatoptions+=1            " When wrapping paragraphs, don't end lines
+"set formatoptions+=1            " When wrapping paragraphs, don't end lines
                                 "    with 1-letter words (looks stupid)
+" Folding rules {{{
 set foldenable                  " enable folding
 set foldcolumn=2                " add a fold column
 set foldmethod=marker           " detect triple-{ style fold markers
@@ -47,7 +48,10 @@ function! MyFoldText()
     return line . ' …' . repeat(" ",fillcharcount) . foldedlinecount . ' '
 endfunction
 set foldtext=MyFoldText()
+" }}}
 
+" Filetype specific handling {{{
+" only do this part when compiled with support for autocommands
 if has("autocmd")
     augroup invisible_chars "{{{
         au!
@@ -86,11 +90,13 @@ if has("autocmd")
         endfun
 
         autocmd BufNewFile,BufRead *.html,*.htm call s:DetectHTMLVariant()
+        let w:m2=matchadd('ErrorMsg', '\%>120v.\+', -1)
 
         " Auto-closing of HTML/XML tags
         let g:closetag_default_xml=1
         autocmd filetype html,htmldjango let b:closetag_html_style=1
         autocmd filetype html,xhtml,xml source ~/.vim/scripts/closetag.vim
+
     augroup end " }}}
 
     augroup python_files "{{{
@@ -102,7 +108,8 @@ if has("autocmd")
             let n = 1
             while n < 50 && n < line("$")
                 " check for django
-                if getline(n) =~ 'import\s\+\<django\>' || getline(n) =~ 'from\s\+\<django\>\s\+import'
+                if getline(n) =~ 'from\s\+\<django\>' || getline(n) =~ 'import\s\+\<django\>'
+                    set ft=python
                     set ft=python.django
                     "set syntax=python
                     return
@@ -125,7 +132,7 @@ if has("autocmd")
 
         " Folding for Python (uses syntax/python.vim for fold definitions)
         "autocmd filetype python,rst setlocal nofoldenable
-        "autocmd filetype python setlocal foldmethod=expr
+        autocmd filetype python setlocal foldmethod=expr
 
         " Python runners
         autocmd filetype python map <buffer> <F5> :w<CR>:!python %<CR>
@@ -134,7 +141,7 @@ if has("autocmd")
         autocmd filetype python imap <buffer> <S-F5> <Esc>:w<CR>:!ipython %<CR>
 
         " Run a quick static syntax check every time we save a Python file
-        "autocmd BufWritePost *.py call Pyflakes()
+        autocmd BufWritePost *.py call Pyflakes()
     augroup end " }}}
 
     augroup rst_files "{{{
@@ -193,6 +200,7 @@ endif " has("autocmd")
 
 " }}}
 
+
 " Gundo.vim
 if v:version >= 730
     nnoremap <F7> :GundoToggle<CR>
@@ -205,7 +213,6 @@ endif
 " Activar navegador de archivos
 nmap <F3> :NERDTreeToggle<CR>
 nmap <leader>m :NERDTreeClose<CR>:NERDTreeFind<CR>
-nmap <leader>N :NERDTreeClose<CR>
 
 " Store the bookmarks file
 let NERDTreeBookmarksFile=expand("$HOME/.vim/NERDTreeBookmarks")
@@ -233,6 +240,10 @@ let NERDTreeIgnore=[ '\.pyc$', '\.pyo$', '\.py\$class$', '\.obj$',
 
 " }}}
 
+
+" make p in Visual mode replace the selected text with the yank register
+vnoremap p <Esc>:let current_reg = @"<CR>gvdi<C-R>=current_reg<CR><Esc>
+
 filetype on  " Automatically detect file types.
 filetype indent on
 filetype plugin on
@@ -257,7 +268,7 @@ colorscheme delek  " Uncomment this to set a default theme
 set showcmd                     " show (partial) command in the last line of the screen
                                 "    this also shows visual selection info
 " Formatting (some of these are for coding in C and C++)
-set ts=4  " Tabs are 2 spaces
+set ts=4  " Tabs are 4 spaces
 set bs=2  " Backspace over everything in insert mode
 set shiftwidth=4  " Tabs under smart indent
 set nocp incsearch
@@ -281,9 +292,18 @@ set list listchars=tab:»»,trail:·
 "set list lcs=tab:·⁖,trail:¶
 " Quitar espacios al final de la linea
 "autocmd BufWritePre * :%s/\s\+$//e
+" Strip all trailing whitespace from a file, using ,w
+nnoremap <leader>W :%s/\s\+$//<CR>:let @/=''<CR>
 " Quitar tabs
 "autocmd BufWritePre * retab
-set novisualbell  " No blinking .
+nnoremap <leader>T :retab<CR>:let @/=''<CR>
+
+if has("gui_running")
+    set novisualbell  " No blinking .
+else
+    set visualbell    " don't beep
+endif
+
 set noerrorbells  " No noise.
 set laststatus=2  " Always show status line.
 
@@ -304,13 +324,16 @@ set directory=~/.vim/.tmp,~/tmp,/tmp
 map <f10> :set paste<cr>
 map <f11> :set nopaste<cr>
 
-" Nuestros valores por defecto para el plugin Project
-:let g:proj_flags="imstvcg"
-
+" Easy window navigation
+map <C-h> <C-w>h
+map <C-j> <C-w>j
+map <C-k> <C-w>k
+map <C-l> <C-w>l
+nnoremap <leader>w <C-w>v<C-w>l
+nnoremap <leader>s <C-w>n<C-w>k
 " Pep 8 validator
 "noremap  <F6>  :call Pep8()<CR>
 autocmd FileType python map <buffer> <F6> :call Pep8()<CR>
-
 "tagbsearch  use binary searching in tags files
 "set tbs
 "set notbs
@@ -340,7 +363,7 @@ nmap <leader>ar :right<CR>
 nmap <leader>ac :center<CR>
 
 " Dpaste
-map <leader>p :Dpaste<CR>
+map <C-D> :Dpaste<CR>
 
 "Paste ,v
 nnoremap <leader>v "+gP
@@ -350,7 +373,7 @@ nnoremap <Space> za
 vnoremap <Space> za
 
 " Creating folds for tags in HTML
-nnoremap <leader>ft Vatzf
+nnoremap <leader>t Vatzf
 
 " Jump to matching pairs easily, with Tab
 nnoremap <Tab> %
@@ -388,14 +411,23 @@ let Tlist_GainFocus_On_ToggleOpen=1
 let Tlist_File_Fold_Auto_Close = 1
 " the default ctags in /usr/bin on the Mac is GNU ctags, so change it to the
 " exuberant ctags version in /usr/local/bin
-"let Tlist_Ctags_Cmd = '/usr/local/bin/ctags'
+"let Tlist_Ctags_Cmd = '~/.vim/tags/ingres.ctags'
+"map <S-F11> :exe '!ctags -R -f ~/.vim/tags/ingres.ctags ' . system('python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"')<CR>
+" Tag files
+"set tags+=$HOME/.vim/tags/ingres.ctags
+" Ctrl+Right Arrow to goto source of function under the cursor
+map <silent><C-Left> <C-T>
+" Ctrl+Left Arrow to go back
+map <silent><C-Right> <C-]>
+
+
 " Tamaño mínimo de frame de tags
 let Tlist_WinWidth = 40
 " Cerrar sola ventana de ayuda de completado
 autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
 autocmd InsertLeave * if pumvisible() == 0|pclose|endif
 " acceso directo para autocompletado
-imap <C-J> <C-X><C-O>
+"imap <C-J> <C-X><C-O>
 " Mostrar lista de todo's
 map <F2> :TaskList<CR>
 " Atajos para pestañas como los de Firefox/Chrome/Opera/etc
@@ -407,10 +439,11 @@ map <c-pagedown> :tabn<cr>
 
 " Configuración del autocompletado inteligente (el de Python necesita un Vim
 " compilado contra las librerías de Python para funcionar)
-" autocmd FileType python set omnifunc=pythoncomplete#Complete
+autocmd FileType python set omnifunc=pythoncomplete#Complete
 autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
 autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+set ofu=syntaxcomplete#Complete
 
 " Reduce number of entries found for speed
 let g:fuzzy_ceiling = 40000
@@ -423,13 +456,11 @@ let g:fuzzy_ignore = 'vendor/*'
 au BufNewFile,BufRead *.less set filetype=less
 
 " Tabbing rules
-"au BufRead *.rb set ts=2 sw=2 sts=2
+au BufRead *.html set ts=2 sw=2 sts=2 textwidth=120
 au BufRead *.js set ts=4 sw=4 sts=4
 
 " Let fugitive.vim show me git status
 set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
-
-
 
 "taglist
 "set statusline=%<%f%=%([%{Tlist_Get_Tagname_By_Line()}]%)
@@ -521,13 +552,14 @@ let g:user_zen_settings = {
 \    'html' : {
 \        'extends' : 'html',
 \        'filters' : 'html',
-\        'indentation' : '  '
+\        'indentation' : ' '
 \    },
 \    'xml' : {
 \        'extends' : 'html',
 \    },
-\    'haml' : {
+\    'htm' : {
 \        'extends' : 'html',
+\        'indentation' : ' '
 \   },
 \}
 
@@ -560,4 +592,52 @@ nnoremap <leader>3 yypVr=
 nnoremap <leader>4 yypVr-
 nnoremap <leader>5 yypVr^
 nnoremap <leader>6 yypVr"
+
+
+" fuzzyfinder {{{
+let g:fuf_modesDisable = []
+let g:fuf_mrufile_maxItem = 400
+let g:fuf_mrucmd_maxItem = 400
+nnoremap <silent> sj         :FufBuffer<CR>
+nnoremap <silent> sk         :FufFileWithCurrentBufferDir<CR>
+nnoremap <silent> sK         :FufFileWithFullCwd<CR>
+nnoremap <silent> <leader>ff :FufFile<CR>
+nnoremap <silent> <leader>fo :FufCoverageFileChange<CR>
+nnoremap <silent> sL         :FufCoverageFileChange<CR>
+nnoremap <silent> <leader>fb :FufCoverageFileRegister<CR>
+nnoremap <silent> sd         :FufDirWithCurrentBufferDir<CR>
+nnoremap <silent> sD         :FufDirWithFullCwd<CR>
+nnoremap <silent> <leader>fd :FufDir<CR>
+nnoremap <silent> sn         :FufMruFile<CR>
+nnoremap <silent> sN         :FufMruFileInCwd<CR>
+nnoremap <silent> sm         :FufMruCmd<CR>
+nnoremap <silent> su         :FufBookmarkFile<CR>
+nnoremap <silent> <leader>fu :FufBookmarkFileAdd<CR>
+vnoremap <silent> <leader>fu :FufBookmarkFileAddAsSelectedText<CR>
+nnoremap <silent> si         :FufBookmarkDir<CR>
+nnoremap <silent> <leader>fi :FufBookmarkDirAdd<CR>
+nnoremap <silent> st         :FufTag<CR>
+nnoremap <silent> sT         :FufTag!<CR>
+nnoremap <silent> <leader>fp :FufTagWithCursorWord!<CR>
+nnoremap <silent> s,         :FufBufferTag<CR>
+nnoremap <silent> s<         :FufBufferTag!<CR>
+vnoremap <silent> s,         :FufBufferTagWithSelectedText!<CR>
+vnoremap <silent> s<         :FufBufferTagWithSelectedText<CR>
+nnoremap <silent> s}         :FufBufferTagWithCursorWord!<CR>
+nnoremap <silent> s.         :FufBufferTagAll<CR>
+nnoremap <silent> s>         :FufBufferTagAll!<CR>
+vnoremap <silent> s.         :FufBufferTagAllWithSelectedText!<CR>
+vnoremap <silent> s>         :FufBufferTagAllWithSelectedText<CR>
+nnoremap <silent> s]         :FufBufferTagAllWithCursorWord!<CR>
+nnoremap <silent> sg         :FufTaggedFile<CR>
+nnoremap <silent> sG         :FufTaggedFile!<CR>
+nnoremap <silent> so         :FufJumpList<CR>
+nnoremap <silent> sp         :FufChangeList<CR>
+nnoremap <silent> sq         :FufQuickfix<CR>
+nnoremap <silent> sy         :FufLine<CR>
+nnoremap <silent> sh         :FufHelp<CR>
+nnoremap <silent> se         :FufEditDataFile<CR>
+nnoremap <silent> sr         :FufRenewCache<CR>
+
+"}}}
 

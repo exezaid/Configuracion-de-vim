@@ -97,7 +97,7 @@ if has("gui_running")
 
     hi Comment        gui=NONE   guifg=#cd8b00   guibg=NONE
     hi Constant       gui=NONE   guifg=#ffcd8b   guibg=NONE
-    hi String         gui=NONE   guifg=#ffcd8b   guibg=#404040
+    hi String         gui=BOLD   guifg=#ffcd8b   guibg=NONE
     hi Error          gui=NONE   guifg=#ffffff   guibg=#6e2e2e
     hi Identifier     gui=NONE   guifg=#ff8bff   guibg=NONE
     hi Ignore         gui=NONE
