@@ -9,7 +9,7 @@ au GUIEnter * set lines=35 columns=120
 "toolbariconsize Size of toolbar icons
 "set tbis=small
 "guipty use a pseudo-tty for I/O to external commands
-"set guipty 
+"set guipty
 "set noguipty
 "browsedir      "last", "buffer" or "current": which directory used for the file browser
 "set bsdir=last
